@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  cleanText, isValidDate, localDateKey, createDefaultState, normalizeState,
+  cleanText, cleanBody, isValidDate, localDateKey, createDefaultState, normalizeState,
   makeTask, makeNote, taskSummary, sortedTasks, upcomingTasks, parseBackup, MAX_TASKS
 } from "../src/model.js";
 
@@ -44,7 +44,7 @@ test("local date key does not convert through UTC", () => {
 test("trims and caps user text", () => {
   assert.equal(cleanText("  A\n B  ", 100), "A  B");
   assert.equal(cleanText("123456", 3), "123");
-  assert.equal(cleanText(null, 12), "");
+  assert.equal(cleanText(null, 12), "");\n  assert.equal(cleanBody("  Line 1\\nLine 2  ", 50), "Line 1\\nLine 2");
 });
 test("creates task and note with sensible defaults", () => {
   const task = makeTask("Read chapter 3", "2026-10-30");
@@ -70,7 +70,7 @@ test("counts and sorts tasks without mutating original", () => {
 test("backup rejects invalid, oversized, and incompatible data", () => {
   assert.throws(() => parseBackup("{oops"), /JSON/);
   assert.throws(() => parseBackup(JSON.stringify({ version: 2, tasks: [], notes: [] })), /version/);
-  assert.throws(() => parseBackup("x".repeat(1_000_001)), /1 MB/);
+  assert.throws(() => parseBackup("x".repeat(4_000_001)), /4 MB/);
   assert.deepEqual(parseBackup(JSON.stringify(createDefaultState())), createDefaultState());
 });
 test("caps untrusted import arrays", () => {
