@@ -1,10 +1,16 @@
 export const SCHEMA_VERSION = 1;
 export const MAX_TASKS = 500;
-export const MAX_NOTES = 200;
+export const MAX_NOTES = 100;
 
 export function cleanText(value, maxLength) {
   return typeof value === "string"
     ? value.replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, maxLength)
+    : "";
+}
+
+export function cleanBody(value, maxLength) {
+  return typeof value === "string"
+    ? value.replace(/[\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]/g, "").trim().slice(0, maxLength)
     : "";
 }
 
@@ -60,7 +66,7 @@ export function normalizeState(input) {
     .map((item) => ({
       id: item.id,
       title: cleanText(item.title, 160),
-      content: cleanText(item.content, 20000),
+      content: cleanBody(item.content, 5000),
       updatedAt: validTimestamp(item.updatedAt)
     }))
     .filter((item) => {
@@ -91,7 +97,7 @@ export function makeTask(title, dueDate = "", priority = "medium") {
 export function makeNote(title, content = "", id = newId()) {
   const safeTitle = cleanText(title, 160);
   if (!safeTitle) throw new Error("Note title is required.");
-  return { id, title: safeTitle, content: cleanText(content, 20000), updatedAt: new Date().toISOString() };
+  return { id, title: safeTitle, content: cleanBody(content, 5000), updatedAt: new Date().toISOString() };
 }
 
 export function taskSummary(tasks) {
@@ -111,7 +117,7 @@ export function upcomingTasks(tasks) {
 }
 
 export function parseBackup(text) {
-  if (typeof text !== "string" || text.length > 1_000_000) throw new Error("Backup must be a JSON file under 1 MB.");
+  if (typeof text !== "string" || text.length > 4_000_000) throw new Error("Backup must be a JSON file under 4 MB.");
   let input;
   try { input = JSON.parse(text); } catch { throw new Error("Invalid JSON backup."); }
   if (!input || input.version !== SCHEMA_VERSION || !Array.isArray(input.tasks) || !Array.isArray(input.notes)) {
