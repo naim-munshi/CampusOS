@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="description" content="CampusOS — a private, offline-friendly student workspace for tasks, notes and focus.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'; connect-src 'none'">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <link rel="stylesheet" href="./styles.css">
+  <title>CampusOS | Student Workspace</title>
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand" aria-label="CampusOS">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <span><strong>CampusOS</strong><small>Student workspace</small></span>
+      </div>
+      <p class="sidebar-heading">WORKSPACE</p>
+      <nav class="navigation" aria-label="Main navigation">
+        <button class="nav-item active" data-view="overview" aria-current="page" type="button"><span aria-hidden="true">▦</span> Overview</button>
+        <button class="nav-item" data-view="tasks" type="button"><span aria-hidden="true">☑</span> Tasks</button>
+        <button class="nav-item" data-view="notes" type="button"><span aria-hidden="true">▤</span> Notes</button>
+        <button class="nav-item" data-view="calculator" type="button"><span aria-hidden="true">⌗</span> Calculator</button>
+        <button class="nav-item" data-view="settings" type="button"><span aria-hidden="true">⚙</span> Settings</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="privacy-indicator"><span class="dot"></span> Local-first workspace</div>
+        <p>Your data stays in this browser unless you export it.</p>
+      </div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb">Workspace <span aria-hidden="true">/</span> <strong id="page-label">Overview</strong></div>
+        <div class="top-actions">
+          <span class="today-label" id="header-date"></span>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Toggle theme">◐</button>
+          <span class="user-avatar" aria-label="Personal workspace">S</span>
+        </div>
+      </header>
+      <main id="main-content" tabindex="-1">
+        <section class="panel" data-panel="overview" aria-labelledby="overview-heading">
+          <div class="hero">
+            <div class="hero-copy">
+              <span class="eyebrow">YOUR DAILY COMMAND CENTER</span>
+              <h1 id="overview-heading">Make today count<span class="accent">.</span></h1>
+              <p>A calmer place to plan assignments, capture ideas, and stay on track.</p>
+              <button type="button" class="primary-button" data-go="tasks">Plan your day <span aria-hidden="true">→</span></button>
+            </div>
+            <div class="clock-card" aria-label="Current local time and date">
+              <span class="clock-caption">LOCAL TIME</span>
+              <strong id="clock" class="clock-time">--:--</strong>
+              <span id="clock-date" class="clock-date"></span>
+            </div>
+          </div>
+          <div class="section-header"><div><h2>At a glance</h2><p>Your progress across the workspace</p></div></div>
+          <div class="stats-grid">
+            <article class="stat-card"><span class="stat-icon blue">☷</span><span>Total tasks</span><strong id="stat-total">0</strong><small>All assignments and to-dos</small></article>
+            <article class="stat-card"><span class="stat-icon amber">◷</span><span>In progress</span><strong id="stat-open">0</strong><small>Still to complete</small></article>
+            <article class="stat-card"><span class="stat-icon green">✓</span><span>Completed</span><strong id="stat-done">0</strong><small>Keep the momentum</small></article>
+            <article class="stat-card"><span class="stat-icon purple">▤</span><span>Notes saved</span><strong id="stat-notes">0</strong><small>Ideas worth keeping</small></article>
+          </div>
+          <div class="two-column">
+            <section class="surface-card" aria-labelledby="quick-heading">
+              <div class="card-heading"><div><h2 id="quick-heading">Quick capture</h2><p>Get a task out of your head</p></div></div>
+              <form id="quick-task-form" class="quick-form">
+                <label for="quick-task-title">Task name</label>
+                <input id="quick-task-title" name="title" type="text" placeholder="e.g. Finish networking assignment" required maxlength="160" autocomplete="off">
+                <label for="quick-task-due">Due date (optional)</label>
+                <input id="quick-task-due" name="due" type="date">
+                <button class="primary-button" type="submit">Add task <span aria-hidden="true">+</span></button>
+              </form>
+            </section>
+            <section class="surface-card" aria-labelledby="upcoming-heading">
+              <div class="card-heading"><div><h2 id="upcoming-heading">Upcoming deadlines</h2><p>Your next priorities</p></div><button type="button" class="text-button" data-go="tasks">See all →</button></div>
+              <div id="upcoming-list" class="compact-list"></div>
+            </section>
+          </div>
+          <section class="surface-card recent-card" aria-labelledby="recent-heading">
+            <div class="card-heading"><div><h2 id="recent-heading">Tasks in progress</h2><p>Pick up where you left off</p></div><button type="button" class="text-button" data-go="tasks">Manage tasks →</button></div>
+            <div id="overview-task-list" class="compact-list"></div>
+          </section>
+        </section>
+        <section class="panel" data-panel="tasks" aria-labelledby="tasks-heading" hidden>
+          <div class="page-intro"><span class="eyebrow">STAY ON TRACK</span><h1 id="tasks-heading">Task manager<span class="accent">.</span></h1><p>Organize your coursework and personal priorities.</p></div>
+          <section class="surface-card" aria-labelledby="add-task-heading">
+            <h2 id="add-task-heading">Create a task</h2>
+            <form id="task-form" class="task-form">
+              <div class="field field-grow"><label for="task-title">Task name</label><input id="task-title" name="title" type="text" maxlength="160" required placeholder="What needs to get done?"></div>
+              <div class="field"><label for="task-due">Due date</label><input id="task-due" name="due" type="date"></div>
+              <div class="field"><label for="task-priority">Priority</label><select id="task-priority" name="priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div>
+              <button class="primary-button" type="submit">Add task</button>
+            </form>
+          </section>
+          <section class="surface-card list-surface" aria-labelledby="task-list-heading">
+            <div class="card-heading wrap-heading"><div><h2 id="task-list-heading">All tasks</h2><p id="task-count">No tasks yet</p></div>
+              <div class="filter-group" role="group" aria-label="Filter tasks">
+                <button class="filter-button selected" data-filter="all" type="button" aria-pressed="true">All</button>
+                <button class="filter-button" data-filter="active" type="button" aria-pressed="false">Active</button>
+                <button class="filter-button" data-filter="completed" type="button" aria-pressed="false">Completed</button>
+              </div>
+            </div>
+            <div id="task-list" class="task-list"></div>
+          </section>
+        </section>
+        <section class="panel" data-panel="notes" aria-labelledby="notes-heading" hidden>
+          <div class="page-intro"><span class="eyebrow">COLLECT YOUR THOUGHTS</span><h1 id="notes-heading">Your notes<span class="accent">.</span></h1><p>Capture lectures, ideas and quick reminders.</p></div>
+          <div class="notes-layout">
+            <section class="surface-card" aria-labelledby="note-editor-heading">
+              <h2 id="note-editor-heading">New note</h2>
+              <form id="note-form" class="note-form">
+                <input type="hidden" id="note-id" name="id">
+                <label for="note-title">Title</label><input id="note-title" name="title" maxlength="160" required placeholder="Note title">
+                <label for="note-content">Content</label><textarea id="note-content" name="content" rows="10" maxlength="20000" placeholder="Start writing..."></textarea>
+                <div class="form-actions"><button class="secondary-button" type="button" id="cancel-note" hidden>Cancel edit</button><button class="primary-button" type="submit" id="save-note">Save note</button></div>
+              </form>
+            </section>
+            <section class="surface-card" aria-labelledby="saved-notes-heading">
+              <div class="card-heading"><div><h2 id="saved-notes-heading">Saved notes</h2><p id="notes-count">0 notes</p></div></div>
+              <div id="notes-list" class="notes-list"></div>
+            </section>
+          </div>
+        </section>
+        <section class="panel" data-panel="calculator" aria-labelledby="calculator-heading" hidden>
+          <div class="page-intro"><span class="eyebrow">QUICK UTILITIES</span><h1 id="calculator-heading">Calculator<span class="accent">.</span></h1><p>A practical tool for everyday calculations, with no unsafe code execution.</p></div>
+          <div class="calculator surface-card">
+            <div class="calc-display" aria-live="polite" aria-atomic="true"><span id="calc-expression">0</span><strong id="calc-result">0</strong></div>
+            <div class="calc-keys" aria-label="Calculator buttons">
+              <button type="button" data-calc="clear" class="calc-muted">AC</button><button type="button" data-calc="backspace" class="calc-muted">⌫</button><button type="button" data-calc="(" class="calc-muted">(</button><button type="button" data-calc=")" class="calc-muted">)</button>
+              <button type="button" data-calc="7">7</button><button type="button" data-calc="8">8</button><button type="button" data-calc="9">9</button><button type="button" data-calc="/" class="calc-operator">÷</button>
+              <button type="button" data-calc="4">4</button><button type="button" data-calc="5">5</button><button type="button" data-calc="6">6</button><button type="button" data-calc="*" class="calc-operator">×</button>
+              <button type="button" data-calc="1">1</button><button type="button" data-calc="2">2</button><button type="button" data-calc="3">3</button><button type="button" data-calc="-" class="calc-operator">−</button>
+              <button type="button" data-calc="0">0</button><button type="button" data-calc=".">.</button><button type="button" data-calc="=" class="calc-equals">=</button><button type="button" data-calc="+" class="calc-operator">+</button>
+            </div>
+            <p class="calculator-tip">Tip: Use your keyboard when this page is open. Press Enter to calculate.</p>
+          </div>
+        </section>
+        <section class="panel" data-panel="settings" aria-labelledby="settings-heading" hidden>
+          <div class="page-intro"><span class="eyebrow">YOUR WORKSPACE</span><h1 id="settings-heading">Settings<span class="accent">.</span></h1><p>Manage your private browser data.</p></div>
+          <section class="surface-card settings-card">
+            <h2>Privacy and backup</h2>
+            <p>CampusOS stores tasks, notes and theme preferences in your browser's localStorage. It does not create an account, sync between devices or upload your content. Do not store passwords or sensitive personal information here.</p>
+            <div class="settings-actions">
+              <button type="button" id="export-data" class="primary-button">Export JSON backup</button>
+              <label class="secondary-button upload-button" for="import-data">Import JSON backup</label>
+              <input id="import-data" type="file" accept="application/json,.json" class="visually-hidden">
+            </div>
+            <p class="small-muted">Import replaces existing local data after confirmation. Backups are unencrypted files: handle them carefully.</p>
+            <hr>
+            <h2>Danger zone</h2>
+            <p>Delete all locally saved tasks, notes and preferences from this browser.</p>
+            <button type="button" id="reset-data" class="danger-button">Clear all local data</button>
+          </section>
+        </section>
+      </main>
+      <footer class="footer"><span>CampusOS</span><span>Build better study habits, one day at a time.</span></footer>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
