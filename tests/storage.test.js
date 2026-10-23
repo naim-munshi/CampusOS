@@ -33,7 +33,7 @@ test("bad JSON and disabled storage fail safely", () => {
 });
 test("export and import round-trip normalized data", () => {
   const state = createDefaultState();
-  state.notes.push({ id: "n1", title: "Study", content: "Read chapter", updatedAt: "2026-10-23T01:00:00Z" });
+  state.notes.push({ id: "n1", title: "Study", content: "Read chapter", updatedAt: "2026-10-23T01:00:00.000Z" });
   const restored = deserializeBackup(serializeBackup(state));
   assert.deepEqual(restored, state);
 });
