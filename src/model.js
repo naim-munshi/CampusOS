@@ -10,7 +10,7 @@ export function cleanText(value, maxLength) {
 
 export function cleanBody(value, maxLength) {
   return typeof value === "string"
-    ? value.replace(/[\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]/g, "").trim().slice(0, maxLength)
+    ? value.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "").trim().slice(0, maxLength)
     : "";
 }
 
