@@ -44,7 +44,8 @@ test("local date key does not convert through UTC", () => {
 test("trims and caps user text", () => {
   assert.equal(cleanText("  A\n B  ", 100), "A  B");
   assert.equal(cleanText("123456", 3), "123");
-  assert.equal(cleanText(null, 12), "");\n  assert.equal(cleanBody("  Line 1\\nLine 2  ", 50), "Line 1\\nLine 2");
+  assert.equal(cleanText(null, 12), "");
+  assert.equal(cleanBody("  Line 1\nLine 2  ", 50), "Line 1\nLine 2");
 });
 test("creates task and note with sensible defaults", () => {
   const task = makeTask("Read chapter 3", "2026-10-30");
