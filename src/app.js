@@ -31,8 +31,10 @@ function announce(message) {
 
 function store(next) {
   state = normalizeState(next);
-  if (!saveState(state)) announce("Changes are temporary: this browser is blocking local storage.");
+  const persisted = saveState(state);
   render();
+  if (!persisted) announce("Changes are temporary: this browser is blocking local storage.");
+  return persisted;
 }
 
 function friendlyDate(value) {
@@ -185,9 +187,9 @@ function addTask(form) {
   const data = new FormData(form);
   try {
     const task = makeTask(data.get("title"), data.get("due") || "", data.get("priority") || "medium");
-    store({ ...state, tasks: [task, ...state.tasks] });
+    const persisted = store({ ...state, tasks: [task, ...state.tasks] });
     form.reset();
-    announce("Task added.");
+    if (persisted) announce("Task added.");
   } catch (error) { announce(error.message); }
 }
 
@@ -206,11 +208,11 @@ function saveNote(form) {
   if (!existing && state.notes.length >= MAX_NOTES) { announce("Note limit reached."); return; }
   try {
     const note = makeNote($("note-title").value, $("note-content").value, existing?.id);
-    store({ ...state, notes: existing
+    const persisted = store({ ...state, notes: existing
       ? state.notes.map((item) => item.id === id ? note : item)
       : [note, ...state.notes] });
     clearNoteEditor();
-    announce(existing ? "Note updated." : "Note saved.");
+    if (persisted) announce(existing ? "Note updated." : "Note saved.");
   } catch (error) { announce(error.message); }
 }
 
@@ -252,8 +254,7 @@ $("task-list").addEventListener("change", (event) => {
 $("task-list").addEventListener("click", (event) => {
   const id = event.target.closest("[data-delete-task]")?.dataset.deleteTask;
   if (!id || !window.confirm("Delete this task?")) return;
-  store({ ...state, tasks: state.tasks.filter((task) => task.id !== id) });
-  announce("Task deleted.");
+  if (store({ ...state, tasks: state.tasks.filter((task) => task.id !== id) })) announce("Task deleted.");
 });
 $("note-form").addEventListener("submit", (event) => { event.preventDefault(); saveNote(event.currentTarget); });
 $("cancel-note").addEventListener("click", clearNoteEditor);
@@ -273,9 +274,9 @@ $("notes-list").addEventListener("click", (event) => {
   }
   const deleteId = event.target.closest("[data-delete-note]")?.dataset.deleteNote;
   if (!deleteId || !window.confirm("Delete this note?")) return;
-  store({ ...state, notes: state.notes.filter((note) => note.id !== deleteId) });
+  const persisted = store({ ...state, notes: state.notes.filter((note) => note.id !== deleteId) });
   if ($("note-id").value === deleteId) clearNoteEditor();
-  announce("Note deleted.");
+  if (persisted) announce("Note deleted.");
 });
 $("theme-toggle").addEventListener("click", () => {
   store({ ...state, preferences: { theme: state.preferences.theme === "dark" ? "light" : "dark" } });
@@ -300,9 +301,9 @@ $("import-data").addEventListener("change", async (event) => {
     if (file.size > 4_000_000) throw new Error("Backup exceeds the 4 MB limit.");
     const imported = deserializeBackup(await file.text());
     if (!window.confirm("Import this backup? It will replace all current tasks and notes.")) return;
-    store(imported);
+    const persisted = store(imported);
     clearNoteEditor();
-    announce("Backup imported.");
+    if (persisted) announce("Backup imported.");
   } catch (error) { announce(error.message); }
   finally { input.value = ""; }
 });
