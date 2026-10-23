@@ -170,7 +170,7 @@ function showView(name) {
   $("page-label").textContent = label;
   document.title = `CampusOS | ${label}`;
   $("main-content").focus({ preventScroll: true });
-  window.scrollTo({ top: 0, behavior: "instant" });
+  window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 function updateClock() {
@@ -297,7 +297,7 @@ $("import-data").addEventListener("change", async (event) => {
   const file = input.files?.[0];
   if (!file) return;
   try {
-    if (file.size > 1_000_000) throw new Error("Backup exceeds the 1 MB limit.");
+    if (file.size > 4_000_000) throw new Error("Backup exceeds the 4 MB limit.");
     const imported = deserializeBackup(await file.text());
     if (!window.confirm("Import this backup? It will replace all current tasks and notes.")) return;
     store(imported);
